@@ -17,17 +17,18 @@ enum GamePhase
   GAME_PHASE_OUTCARD,        // 出牌阶段
   GAME_PHASE_THROWCARD,      // 弃牌阶段，可触发克己技能
   GAME_PHASE_AFTER_THROWCARD, // 弃牌后，可触发闭月技能 
-  GAME_PHASE_MAX_GAMEPROC    
+  GAME_PHASE_MAX_GAMEPHASE    
 };
 
+class CTable;
 class CGameRound;
 
 class CGamePhase
 {
 public:
-  virtual CGamePhase * Perform() = 0;
+  virtual CGamePhase * Processing() = 0;
 protected:
-  int m_Phase;
+  int m_AllPhases;
   CGameRound *m_GameRound;
 };
 
@@ -35,62 +36,70 @@ class CPreStartPhase: public CGamePhase
 {
 public:
   CPreStartPhase(CGameRound *gameround);
-  virtual CGamePhase * Perform();
+  virtual CGamePhase * Processing();
 };
 
 class CJudgePhase: public CGamePhase
 {
 public:
   CJudgePhase(CGameRound *gameround);
-  virtual CGamePhase * Perform();
+  virtual CGamePhase * Processing();
 };
 
 class CDrawCardPhase: public CGamePhase
 {
 public:
   CDrawCardPhase(CGameRound *gameround);
-  virtual CGamePhase *  Perform();
+  virtual CGamePhase * Processing();
 };
 
 class COutCardPhase: public CGamePhase
 {
 public:
   COutCardPhase(CGameRound *gameround);
-  virtual CGamePhase *  Perform();
+  virtual CGamePhase * Processing();
 };
 
 class CThrowCardPhase: public CGamePhase
 {
 public:
   CThrowCardPhase(CGameRound *gameround);
-  virtual CGamePhase *  Perform();
+  virtual CGamePhase * Processing();
 };
 
 class CAfterThrowCardPhase: public CGamePhase
 {
 public:
   CAfterThrowCardPhase(CGameRound *gameround);
-  virtual CGamePhase *  Perform();
+  virtual CGamePhase * Processing();
 };
 
 class CGameRound
 {
 public:
+  static CGameRound * CreateGameRound(CTable *table);
+  
+public:
+  CGameRound();
+  ~CGameRound();
+  int Init(CTable *table);
+  void DeInit();
 
-  int Init();
+  void Reset();
   void Run();
   void SetPhase(CGamePhase *phase);
 
-  CGamePhase * GetPreStartPhase() { return m_Phase[GAME_PHASE_PRESTART];}
-  CGamePhase * GetJudgePhase() { return m_Phase[GAME_PHASE_JUDGE];}
-  CGamePhase * GetDrawCardPhase() { return m_Phase[GAME_PHASE_DRAWCARD];}
-  CGamePhase * GetOutCardPhase() { return m_Phase[GAME_PHASE_OUTCARD];}
-  CGamePhase * GetThrowCardPhase() { return m_Phase[GAME_PHASE_THROWCARD];}
-  CGamePhase * GetAfterThrowCardPhase() { return m_Phase[GAME_PHASE_AFTER_THROWCARD];}
+  CGamePhase * GetPreStartPhase() { return m_AllPhases[GAME_PHASE_PRESTART];}
+  CGamePhase * GetJudgePhase() { return m_AllPhases[GAME_PHASE_JUDGE];}
+  CGamePhase * GetDrawCardPhase() { return m_AllPhases[GAME_PHASE_DRAWCARD];}
+  CGamePhase * GetOutCardPhase() { return m_AllPhases[GAME_PHASE_OUTCARD];}
+  CGamePhase * GetThrowCardPhase() { return m_AllPhases[GAME_PHASE_THROWCARD];}
+  CGamePhase * GetAfterThrowCardPhase() { return m_AllPhases[GAME_PHASE_AFTER_THROWCARD];}
   
 protected:
-  CGamePhase *m_Phase[MAX_GAMEPROC];
+  CGamePhase *m_AllPhases[GAME_PHASE_MAX_GAMEPHASE];
   CGamePhase *m_CurrentPhase;
+  CTable *m_Table;
 ];
 
 #endif

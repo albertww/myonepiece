@@ -140,7 +140,13 @@ protected:
 class CCardHeap
 {
 public:
+  // new and init
+  static CCardHeap * CreateCardHeap(int packageMask = PACKAGE_STANDARD);
+	
+public:
   CCardHeap();
+  ~CCardHeap();
+ 
   int Init(int packageMask = PACKAGE_STANDARD);
   void DeInit();
   void Shuffle();

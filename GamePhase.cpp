@@ -1,11 +1,11 @@
 
 #include "gamephase.h"
 
-CPreStartPhase::CPreStartPhase(CGameRound *gameround): m_Phase(GAME_PHASE_PRESTART), m_GameRound(gameround)
+CPreStartPhase::CPreStartPhase(CGameRound *gameround): m_AllPhases(GAME_PHASE_PRESTART), m_GameRound(gameround)
 {
 }
 
-CGamePhase *  CPreStartPhase::Perform()
+CGamePhase *  CPreStartPhase::Processing()
 {
   return m_GameRound->GetJudgePhase();
 }
@@ -13,11 +13,11 @@ CGamePhase *  CPreStartPhase::Perform()
 // ---------------------------------------------------
 
 
-CJudgePhase::CJudgePhase(CGameRound *gameround): m_Phase(GAME_PHASE_JUDGE), m_GameRound(gameround)
+CJudgePhase::CJudgePhase(CGameRound *gameround): m_AllPhases(GAME_PHASE_JUDGE), m_GameRound(gameround)
 {
 }
 
-CGamePhase * CJudgePhase::Perform()
+CGamePhase * CJudgePhase::Processing()
 {
   return m_GameRound->GetDrawCardPhase();
 }
@@ -25,11 +25,11 @@ CGamePhase * CJudgePhase::Perform()
 // ---------------------------------------------------
 
 
-CDrawCardPhase::CDrawCardPhase(CGameRound *gameround): m_Phase(GAME_PHASE_DRAWCARD), m_GameRound(gameround)
+CDrawCardPhase::CDrawCardPhase(CGameRound *gameround): m_AllPhases(GAME_PHASE_DRAWCARD), m_GameRound(gameround)
 {
 }
 
-CGamePhase * CDrawCardPhase::Perform()
+CGamePhase * CDrawCardPhase::Processing()
 {
   return m_GameRound->GetOutCardPhase();
 }
@@ -37,11 +37,11 @@ CGamePhase * CDrawCardPhase::Perform()
 // ---------------------------------------------------
 
 
-COutCardPhase::COutCardPhase(CGameRound *gameround): m_Phase(GAME_PHASE_OUTCARD), m_GameRound(gameround)
+COutCardPhase::COutCardPhase(CGameRound *gameround): m_AllPhases(GAME_PHASE_OUTCARD), m_GameRound(gameround)
 {
 }
 
-CGamePhase * COutCardPhase::Perform()
+CGamePhase * COutCardPhase::Processing()
 {
   return m_GameRound->GetThrowCardPhase();
 }
@@ -49,22 +49,22 @@ CGamePhase * COutCardPhase::Perform()
 // ---------------------------------------------------
 
 
-CThrowCardPhase::CThrowCardPhase(CGameRound *gameround): m_Phase(GAME_PHASE_THROWCARD), m_GameRound(gameround)
+CThrowCardPhase::CThrowCardPhase(CGameRound *gameround): m_AllPhases(GAME_PHASE_THROWCARD), m_GameRound(gameround)
 {
 }
 
-CGamePhase * CThrowCardPhase::Perform()
+CGamePhase * CThrowCardPhase::Processing()
 {
   return m_GameRound->SetPhase(m_GameRound->GetAfterThrowCardPhase());
 }
 
 // ---------------------------------------------------
 
-CAfterThrowCardPhase::CAfterThrowCardPhase(CGameRound *gameround): m_Phase(GAME_PHASE_AFTER_THROWCARD), m_GameRound(gameround)
+CAfterThrowCardPhase::CAfterThrowCardPhase(CGameRound *gameround): m_AllPhases(GAME_PHASE_AFTER_THROWCARD), m_GameRound(gameround)
 {
 }
 
-CGamePhase * CAfterThrowCardPhase::Perform()
+CGamePhase * CAfterThrowCardPhase::Processing()
 {
   return NULL;
 }
@@ -72,38 +72,111 @@ CGamePhase * CAfterThrowCardPhase::Perform()
 
 // ---------------------------------------------------
 
-CGameRound::CGameRound(): m_CurrentPhase(NULL)
+CGameRound * CGameRound::CreateGameRound(CTable *table)
 {
-  memset(m_Phase, 0, sizeof(m_Phase));
+  CGameRound *gameRound = new CGameRound();
+  if (gameRound != NULL)
+  {
+    if (gameRound->Init(table))
+    {
+      return gameRound;
+    }
+  }
+  return NULL;
 }
 
-int CGameRound::Init()
+
+CGameRound::CGameRound(): m_CurrentPhase(NULL), m_Table(NULL)
 {
-  m_Phase[GAME_PHASE_PRESTART] = new CPreStartPhase(this);
-  if (m_Phase[GAME_PHASE_PRESTART] == NULL)
+
+}
+
+CGameRound::~CGameRound()
+{
+  DeInit();
+}
+
+int CGameRound::Init(CTable *table)
+{
+  if (table == NULL)
   	return 0;
-  m_Phase[GAME_PHASE_JUDGE] = new CJudgePhase(this);
-  if (m_Phase[GAME_PHASE_JUDGE] == NULL)
+
+  DeInit();
+  
+  m_Table = table;
+  
+  m_AllPhases[GAME_PHASE_PRESTART] = new CPreStartPhase(this);
+  if (m_AllPhases[GAME_PHASE_PRESTART] == NULL)
   	return 0;
-  m_Phase[GAME_PHASE_DRAWCARD] = new CDrawCardPhase(this);
-  if (m_Phase[GAME_PHASE_DRAWCARD] == NULL)
+  m_AllPhases[GAME_PHASE_JUDGE] = new CJudgePhase(this);
+  if (m_AllPhases[GAME_PHASE_JUDGE] == NULL)
   	return 0;
-  m_Phase[GAME_PHASE_OUTCARD] = new COutCardPhase(this);
-  if (m_Phase[GAME_PHASE_OUTCARD] == NULL)
+  m_AllPhases[GAME_PHASE_DRAWCARD] = new CDrawCardPhase(this);
+  if (m_AllPhases[GAME_PHASE_DRAWCARD] == NULL)
   	return 0;
-  m_Phase[GAME_PHASE_THROWCARD] = new CThrowCardPhase(this);
-  if (m_Phase[GAME_PHASE_THROWCARD] == NULL)
+  m_AllPhases[GAME_PHASE_OUTCARD] = new COutCardPhase(this);
+  if (m_AllPhases[GAME_PHASE_OUTCARD] == NULL)
   	return 0;
-  m_Phase[GAME_PHASE_AFTER_THROWCARD] = new CAfterThrowCardPhase(this);
-  if (m_Phase[GAME_PHASE_AFTER_THROWCARD] == NULL)
+  m_AllPhases[GAME_PHASE_THROWCARD] = new CThrowCardPhase(this);
+  if (m_AllPhases[GAME_PHASE_THROWCARD] == NULL)
   	return 0;
-  m_CurrentPhase = m_Phase[GAME_PHASE_PRESTART];
+  m_AllPhases[GAME_PHASE_AFTER_THROWCARD] = new CAfterThrowCardPhase(this);
+  if (m_AllPhases[GAME_PHASE_AFTER_THROWCARD] == NULL)
+  	return 0;
+  m_CurrentPhase = m_AllPhases[GAME_PHASE_PRESTART];
 
   return 1;
 }
 
+void CGameRound::DeInit()
+{
+  m_CurrentPhase = NULL;
+  m_Table = NULL;
+  
+  if (m_AllPhases[GAME_PHASE_PRESTART] != NULL)
+  {
+    delete m_AllPhases[GAME_PHASE_PRESTART];
+  }
+  
+  if (m_AllPhases[GAME_PHASE_JUDGE] == NULL)
+  {
+    delete m_AllPhases[GAME_PHASE_JUDGE];
+  }
+  
+  if (m_AllPhases[GAME_PHASE_DRAWCARD] == NULL)
+  {
+    delete m_AllPhases[GAME_PHASE_DRAWCARD];
+  }
+  
+  if (m_AllPhases[GAME_PHASE_OUTCARD] == NULL)
+  {
+    delete m_AllPhases[GAME_PHASE_OUTCARD];
+  }
+  
+  if (m_AllPhases[GAME_PHASE_THROWCARD] == NULL)
+  {
+    delete m_AllPhases[GAME_PHASE_THROWCARD];
+  }
+  
+  if (m_AllPhases[GAME_PHASE_AFTER_THROWCARD] == NULL)
+  {
+    delete m_AllPhases[GAME_PHASE_AFTER_THROWCARD];
+  }
+
+  memset(m_AllPhases, 0, sizeof(m_AllPhases));
+}
+
+void CGameRound::Reset()
+{
+  m_CurrentPhase = m_AllPhases[GAME_PHASE_PRESTART];
+}
+
 void CGameRound::Run()
 {
+  while (m_CurrentPhase != NULL)
+  {
+    m_CurrentPhase->Processing();
+  }
 }
 
 void CGameRound::SetPhase(CGamePhase *phase)

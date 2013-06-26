@@ -170,8 +170,27 @@ const CardInfo WarfareCards[] =
 
 // --------------------------------------------------------------------------
 
+CCardHeap * CCardHeap::CreateCardHeap(int packageMask)
+{
+  CCardHeap *cardHeap = new CCardHeap();
+  if (cardHeap != NULL)
+  {
+    if (cardHeap->Init(packageMask))
+    {  
+      return cardHeap;
+    }
+  }
+  return NULL;
+}
+
+
 CCardHeap::CCardHeap(): m_CardMask(PACKAGE_STANDARD), m_AllCards(NULL), m_CardNum(0)
 {
+}
+
+CCardHeap::~CCardHeap()
+{
+  DeInit();
 }
 
 int CCardHeap::Init(int packageMask)

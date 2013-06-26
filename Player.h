@@ -9,7 +9,7 @@ class CPlayer
 {
 public:
   CPlayer(CTable *table);
-  ~CPlayer();
+  virtual ~CPlayer();
 
   void DrawCard(CCard **cards, int num);
   int DisCard();

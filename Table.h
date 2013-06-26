@@ -7,16 +7,22 @@
 #ifndef _TABLE_H_
 #define _TABLE_H_
 
+#include "GamePhase.h"
+
 class CPlayer;
 
 class CTable
 {
 public:
+  CTable();
+  ~CTable();
 
   int Init();
+  void DeInit();
 
   void PlayerJoin(CPlayer *player);
-  void StartGame();
+  void BeginGame();
+  void PlayGame();
   void EndGame();
   
   void ShuffleCards();
@@ -30,7 +36,8 @@ public:
 
 protected:
   list<CPlayer *> m_Players; // or replace it with playermanager
-  CCardHeap m_CardHeap;
+  CCardHeap *m_CardHeap;
+  CGameRound *m_GameRound;
 };
 
 #endif
