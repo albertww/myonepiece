@@ -1,7 +1,7 @@
 
 #include "gamephase.h"
 
-CPreStartPhase::CPreStartPhase(CGameRound *gameround): m_Phase(GamePhase::PRESTART), m_GameRound(gameround)
+CPreStartPhase::CPreStartPhase(CGameRound *gameround): m_Phase(GAME_PHASE_PRESTART), m_GameRound(gameround)
 {
 }
 
@@ -13,7 +13,7 @@ CGamePhase *  CPreStartPhase::Perform()
 // ---------------------------------------------------
 
 
-CJudgePhase::CJudgePhase(CGameRound *gameround): m_Phase(GamePhase::JUDGE), m_GameRound(gameround)
+CJudgePhase::CJudgePhase(CGameRound *gameround): m_Phase(GAME_PHASE_JUDGE), m_GameRound(gameround)
 {
 }
 
@@ -25,7 +25,7 @@ CGamePhase * CJudgePhase::Perform()
 // ---------------------------------------------------
 
 
-CDrawCardPhase::CDrawCardPhase(CGameRound *gameround): m_Phase(GamePhase::DRAWCARD), m_GameRound(gameround)
+CDrawCardPhase::CDrawCardPhase(CGameRound *gameround): m_Phase(GAME_PHASE_DRAWCARD), m_GameRound(gameround)
 {
 }
 
@@ -37,7 +37,7 @@ CGamePhase * CDrawCardPhase::Perform()
 // ---------------------------------------------------
 
 
-COutCardPhase::COutCardPhase(CGameRound *gameround): m_Phase(GamePhase::OUTCARD), m_GameRound(gameround)
+COutCardPhase::COutCardPhase(CGameRound *gameround): m_Phase(GAME_PHASE_OUTCARD), m_GameRound(gameround)
 {
 }
 
@@ -49,7 +49,7 @@ CGamePhase * COutCardPhase::Perform()
 // ---------------------------------------------------
 
 
-CThrowCardPhase::CThrowCardPhase(CGameRound *gameround): m_Phase(GamePhase::THROWCARD), m_GameRound(gameround)
+CThrowCardPhase::CThrowCardPhase(CGameRound *gameround): m_Phase(GAME_PHASE_THROWCARD), m_GameRound(gameround)
 {
 }
 
@@ -60,7 +60,7 @@ CGamePhase * CThrowCardPhase::Perform()
 
 // ---------------------------------------------------
 
-CAfterThrowCardPhase::CAfterThrowCardPhase(CGameRound *gameround): m_Phase(GamePhase::AFTER_THROWCARD), m_GameRound(gameround)
+CAfterThrowCardPhase::CAfterThrowCardPhase(CGameRound *gameround): m_Phase(GAME_PHASE_AFTER_THROWCARD), m_GameRound(gameround)
 {
 }
 
@@ -79,13 +79,25 @@ CGameRound::CGameRound(): m_CurrentPhase(NULL)
 
 int CGameRound::Init()
 {
-  m_Phase[PRESTART] = new CPreStartPhase(this);
-  m_Phase[JUDGE] = new CJudgePhase(this);
-  m_Phase[DRAWCARD] = new CDrawCardPhase(this);
-  m_Phase[OUTCARD] = new COutCardPhase(this);
-  m_Phase[THROWCARD] = new CThrowCardPhase(this);
-  m_Phase[AFTER_THROWCARD] = new CAfterThrowCardPhase(this);
-  m_CurrentPhase = m_Phase[PRESTART];
+  m_Phase[GAME_PHASE_PRESTART] = new CPreStartPhase(this);
+  if (m_Phase[GAME_PHASE_PRESTART] == NULL)
+  	return 0;
+  m_Phase[GAME_PHASE_JUDGE] = new CJudgePhase(this);
+  if (m_Phase[GAME_PHASE_JUDGE] == NULL)
+  	return 0;
+  m_Phase[GAME_PHASE_DRAWCARD] = new CDrawCardPhase(this);
+  if (m_Phase[GAME_PHASE_DRAWCARD] == NULL)
+  	return 0;
+  m_Phase[GAME_PHASE_OUTCARD] = new COutCardPhase(this);
+  if (m_Phase[GAME_PHASE_OUTCARD] == NULL)
+  	return 0;
+  m_Phase[GAME_PHASE_THROWCARD] = new CThrowCardPhase(this);
+  if (m_Phase[GAME_PHASE_THROWCARD] == NULL)
+  	return 0;
+  m_Phase[GAME_PHASE_AFTER_THROWCARD] = new CAfterThrowCardPhase(this);
+  if (m_Phase[GAME_PHASE_AFTER_THROWCARD] == NULL)
+  	return 0;
+  m_CurrentPhase = m_Phase[GAME_PHASE_PRESTART];
 
   return 1;
 }
