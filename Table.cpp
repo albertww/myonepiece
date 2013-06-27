@@ -46,6 +46,7 @@ void CTable::BeginGame()
 
 void CTable::PlayGame()
 {
+  m_GameRound->Run();
 }
 
 void CTable::EndGame()
@@ -54,18 +55,18 @@ void CTable::EndGame()
 
 CTable::ShuffleCards()
 {
-  m_CardHeap.Shuffle();
+  m_CardHeap->Shuffle();
 }
 
 int CTable::PlayerDrawCards(CPlayer *player, int num)
 {
   CCard **cards = new CCard*[num];
-  m_CardHeap.DrawCards(cards, num);
+  m_CardHeap->DrawCards(cards, num);
   player->DrawCard(cards, num);
   delete [] cards;
 }
 
 void CTable::PlayerPutCards(CCard **cards, int num)
 {
-  m_CardHeap.PutCards(cards, num);
+  m_CardHeap->PutCards(cards, num);
 }
