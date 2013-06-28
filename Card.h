@@ -168,7 +168,7 @@ protected:
 
 class CCardArray
 {
-  
+  int num;
 };
 
 #endif

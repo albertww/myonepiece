@@ -168,7 +168,8 @@ void CGameRound::DeInit()
 
 void CGameRound::Reset()
 {
-  m_CurrentPhase = m_AllPhases[GAME_PHASE_PRESTART];
+  //m_CurrentPhase = m_AllPhases[GAME_PHASE_PRESTART];
+  SetPhase(GAME_PHASE_PRESTART);
 }
 
 void CGameRound::Run()
