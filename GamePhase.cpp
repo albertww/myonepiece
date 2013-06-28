@@ -7,7 +7,7 @@ CPreStartPhase::CPreStartPhase(CGameRound *gameround): m_AllPhases(GAME_PHASE_PR
 
 CGamePhase *  CPreStartPhase::Processing()
 {
-  return m_GameRound->GetJudgePhase();
+  return m_GameRound->SetPhase(m_GameRound->GetJudgePhase());
 }
 
 // ---------------------------------------------------
@@ -19,7 +19,7 @@ CJudgePhase::CJudgePhase(CGameRound *gameround): m_AllPhases(GAME_PHASE_JUDGE), 
 
 CGamePhase * CJudgePhase::Processing()
 {
-  return m_GameRound->GetDrawCardPhase();
+  return m_GameRound->SetPhase(m_GameRound->GetDrawCardPhase());
 }
 
 // ---------------------------------------------------
@@ -31,7 +31,7 @@ CDrawCardPhase::CDrawCardPhase(CGameRound *gameround): m_AllPhases(GAME_PHASE_DR
 
 CGamePhase * CDrawCardPhase::Processing()
 {
-  return m_GameRound->GetOutCardPhase();
+  return m_GameRound->SetPhase(m_GameRound->GetOutCardPhase());
 }
 
 // ---------------------------------------------------
@@ -43,7 +43,7 @@ COutCardPhase::COutCardPhase(CGameRound *gameround): m_AllPhases(GAME_PHASE_OUTC
 
 CGamePhase * COutCardPhase::Processing()
 {
-  return m_GameRound->GetThrowCardPhase();
+  return m_GameRound->SetPhase(m_GameRound->GetThrowCardPhase());
 }
 
 // ---------------------------------------------------
