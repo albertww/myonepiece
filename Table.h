@@ -11,6 +11,17 @@
 
 class CPlayer;
 
+struct ScenePlayer
+{
+  
+};
+
+class CGameScene
+{
+public:
+  
+};
+
 class CTable
 {
 public:

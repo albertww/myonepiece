@@ -229,6 +229,7 @@ int CCardHeap::Init(int packageMask)
     {
       m_AllCards[i].SetCardInfo(WarfareCards[i - standardNum]);
     }
+	m_AllCards[i].SetCardID(i);
   }
   
   return 1;

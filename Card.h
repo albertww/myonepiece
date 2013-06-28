@@ -130,10 +130,14 @@ public:
   uchar GetCardState() const { return m_CardState; };
   void SetCardState(uchar cardState) { m_CardState = cardState; }
 
+  uchar GetCardID() const { return m_CardID; }
+  void SetCardID(uchar cardID) { m_CardID = cardID; }
+
 protected:
   CardInfo m_CardInfo;
   CSkill *m_CardSkill;
   uchar m_CardState;
+  uchar m_CardID;
 };
 
 // Card heap contain all cards, 

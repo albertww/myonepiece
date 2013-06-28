@@ -12,6 +12,8 @@ public:
   virtual ~CPlayer();
 
   void JoinTable(CTable *table);
+  void StartGame();
+  void OnStartGame();
   void DrawCard(CCard **cards, int num);
   virtual void OnDrawCard(CCard **cards, int num);
   /* 
@@ -31,13 +33,22 @@ public:
   int DiscardTo(int num, CCard **cards);
   virtual int OnDiscardTo(int num, CCard **cards);
 
+  int AttackDistance();
+  int Distance();
+
 protected:
   list<CCard *> m_HandCard;
   //CCard *m_JudgementCard[JUDGEMENT_CARD_TYPE];
   list<CCard *> m_JudgementCard;
   CCard *m_EquipmentCard[EQUIPMENT_CARD_TYPE];
   CTable *m_Table;
+  map<int, CSkill *> m_Skills;
   uchar m_HealthPoint;
+  
+};
+
+class CClientPlayer: public CPlayer
+{
   
 };
 
