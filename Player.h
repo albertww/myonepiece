@@ -33,6 +33,8 @@ public:
   int DiscardTo(int num, CCard **cards);
   virtual int OnDiscardTo(int num, CCard **cards);
 
+  virtual void OnOutCard();
+
   int AttackDistance();
   int Distance();
 

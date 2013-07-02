@@ -9,7 +9,7 @@
 #ifndef _GAME_PHASE_H_
 #define _GAME_PHASE_H_
 
-enum GamePhase
+enum GameRoundPhase
 {
   GAME_PHASE_PRESTART = 0,   // 回合开始前，可发动洛神技能，可触发观星技能
   GAME_PHASE_JUDGE,          // 判定阶段，可触发张角司马懿技能
@@ -26,52 +26,81 @@ class CGameRound;
 class CGamePhase
 {
 public:
-  virtual CGamePhase * Processing() = 0;
+  CGamePhase(CGameRound *gameround);
+  virtual ~CGamePhase();
+  virtual int Init();
+  virtual CGamePhase * OnProc() = 0;
+  virtual CGamePhase * OnResp() = 0;
+  
+  // On Process
+  virtual int OnProc();
+  // On Response
+  virtual int OnResp();
+  
+  void NextTo(CGamePhase *next);
+  void PrevTo(CGamePhase *prev);
+  CGamePhase * GetNextPhase();
+  CGamePhase * GetPrevPhase();
 protected:
-  int m_AllPhases;
+  int m_PhaseID;
   CGameRound *m_GameRound;
+  CGamePhase *m_NextPhase;
+  CGamePhase *m_PrevPhase;
+};
+
+class CPhaseStack
+{
+public:
+  CPhaseStack();
+  int OnProc();
+  int OnResp();
+  int Push(CGamePhase *phase);
+  CGamePhase * Pop();
+  int IsEmpty();
+protected:
+  CGamePhase *m_CurrentPhase;
 };
 
 class CPreStartPhase: public CGamePhase
 {
 public:
   CPreStartPhase(CGameRound *gameround);
-  virtual CGamePhase * Processing();
+  virtual CGamePhase * OnProc();
 };
 
 class CJudgePhase: public CGamePhase
 {
 public:
   CJudgePhase(CGameRound *gameround);
-  virtual CGamePhase * Processing();
+  virtual CGamePhase * OnProc();
 };
 
 class CDrawCardPhase: public CGamePhase
 {
 public:
   CDrawCardPhase(CGameRound *gameround);
-  virtual CGamePhase * Processing();
+  virtual CGamePhase * OnProc();
 };
 
 class COutCardPhase: public CGamePhase
 {
 public:
   COutCardPhase(CGameRound *gameround);
-  virtual CGamePhase * Processing();
+  virtual CGamePhase * OnProc();
 };
 
 class CThrowCardPhase: public CGamePhase
 {
 public:
   CThrowCardPhase(CGameRound *gameround);
-  virtual CGamePhase * Processing();
+  virtual CGamePhase * OnProc();
 };
 
 class CAfterThrowCardPhase: public CGamePhase
 {
 public:
   CAfterThrowCardPhase(CGameRound *gameround);
-  virtual CGamePhase * Processing();
+  virtual CGamePhase * OnProc();
 };
 
 class CGameRound
@@ -101,5 +130,37 @@ protected:
   CGamePhase *m_CurrentPhase;
   CTable *m_Table;
 ];
+
+// Query player's action when outcard phase
+// He can outcard or use a skill
+class CQueryPlayerOutCardPhase: public CGamePhase
+{
+public:
+  CQueryPlayerOutCardPhase();
+  virtual ~CQueryPlayerOutCardPhase();
+  /*
+    send outcard message to player and set timer, if the response from player or timer is coming
+    call OnResp to process it
+  */
+  virtual int OnProc();
+  /*
+    There are 3 type of player action returned
+    1 The player giveup, so go to the next gamephase
+    2 Player outcard
+    3 Player use an active skill
+  */
+  virtual int OnResp(void *data, int len);
+
+};
+
+class CSlashPhase: public CGamePhase
+{
+public:
+  CSlashPhase();
+  virtual ~CSlashPhase();
+  
+  virtual int OnProc();
+  virtual int OnResp(void *data, int len);
+};
 
 #endif

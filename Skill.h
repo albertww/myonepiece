@@ -12,6 +12,15 @@ public:
 
 class CSkill
 {
+public:
+  int OnProcess();
+  int OnResponse();
+};
+
+class CWanjianSkill
+{
+public:
+  int m_Start;
 };
 
 class CCardSkill: public CSkill

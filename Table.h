@@ -45,6 +45,8 @@ public:
   void PlayerDrawCards(CPlayer *player, int num);
   void PlayerPutCards(CCard **cards, int num);
 
+  CPlayer * GetCurrentActivePlayer();
+
 protected:
   list<CPlayer *> m_Players; // or replace it with playermanager
   CCardHeap *m_CardHeap;
