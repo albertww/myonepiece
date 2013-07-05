@@ -312,6 +312,15 @@ void CCardHeap::ShuffleAll()
   delete [] cardIndex;
 }
 
+CCard * CCardHeap::GetCardByCardID(uchar cardID)
+{
+  if (cardID < m_CardNum)
+  {
+    return m_AllCards[cardID];
+  }
+  return NULL;
+}
+
 CCard * CCardHeap::DrawOneCard()
 {
   if (m_CardInHeap.size() <= 0)
@@ -322,6 +331,8 @@ CCard * CCardHeap::DrawOneCard()
   if (m_CardInHeap.size() > 0)
   {
     list<CCard *>::iterator it = m_CardInHeap.begin();
+	if (it == m_CardHeap.end())
+	  return NULL;
 	CCard *card = *it;
 	card->SetCardState(CARD_STATE_IN_PLAYER);
     m_CardInHeap.erase(it);

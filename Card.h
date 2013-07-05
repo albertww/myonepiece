@@ -95,6 +95,7 @@ struct CardInfo
   uchar m_CardType;
   uchar m_CardSuit;
   uchar m_CardPoint;
+  uchar m_CardID;
 };
 
 extern const CardInfo StandardCards[];
@@ -121,6 +122,8 @@ public:
   void SetCardType(uchar cardType) { m_CardInfo.m_CardType = cardType; }
   ushort GetCardSkillID() const { return m_CardInfo.m_SkillID; }
   void SetCardSkillID(ushort skillID) { m_CardInfo.m_SkillID = skillID; }
+   uchar GetCardID() const { return m_CardInfo.m_CardID; }
+  void SetCardID(uchar cardID) { m_CardInfo.m_CardID = cardID; }
   CardInfo GetCardInfo() const { return m_CardInfo; }
   void SetCardInfo(CardInfo &cardInfo) { m_CardInfo = cardInfo; }
 
@@ -130,14 +133,10 @@ public:
   uchar GetCardState() const { return m_CardState; };
   void SetCardState(uchar cardState) { m_CardState = cardState; }
 
-  uchar GetCardID() const { return m_CardID; }
-  void SetCardID(uchar cardID) { m_CardID = cardID; }
-
 protected:
   CardInfo m_CardInfo;
   CSkill *m_CardSkill;
   uchar m_CardState;
-  uchar m_CardID;
 };
 
 // Card heap contain all cards, 
@@ -156,6 +155,7 @@ public:
   void Shuffle();
   void ShuffleAll();
 
+  CCard * GetCardByCardID(uchar cardID);
   CCard * DrawOneCard();
   void PutOneCard(CCard *card);
   int DrawCards(CCard **cards, int num);
